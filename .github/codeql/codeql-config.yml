@@ -1,0 +1,15 @@
+name: "All the goodness from lgtm.com"
+
+disable-default-queries: false
+
+queries:
+  - name: Queries from lgtm.com (Java)
+    uses: github/codeql/java/ql/src/codeql-suites/java-lgtm.qls@lgtm.com
+  - name: Queries from lgtm.com (JavaScript)
+    uses: github/codeql/javascript/ql/src/codeql-suites/java-lgtm.qls@lgtm.com
+  - name: Queries from lgtm.com (Python)
+    uses: github/codeql/python/ql/src/codeql-suites/java-lgtm.qls@lgtm.com
+
+paths-ignore:
+  - src
+  - lib
