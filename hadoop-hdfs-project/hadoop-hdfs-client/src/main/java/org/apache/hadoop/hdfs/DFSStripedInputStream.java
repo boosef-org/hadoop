@@ -17,7 +17,7 @@
  */
 package org.apache.hadoop.hdfs;
 
-import com.google.common.annotations.VisibleForTesting;
+import org.apache.hadoop.classification.VisibleForTesting;
 import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.fs.ReadOption;
 import org.apache.hadoop.hdfs.protocol.BlockType;
@@ -110,9 +110,7 @@ public class DFSStripedInputStream extends DFSInputStream {
         dataBlkNum, parityBlkNum);
     decoder = CodecUtil.createRawDecoder(dfsClient.getConfiguration(),
         ecPolicy.getCodecName(), coderOptions);
-    if (DFSClient.LOG.isDebugEnabled()) {
-      DFSClient.LOG.debug("Creating an striped input stream for file " + src);
-    }
+    DFSClient.LOG.debug("Creating an striped input stream for file {}", src);
   }
 
   private boolean useDirectBuffer() {
@@ -143,14 +141,6 @@ public class DFSStripedInputStream extends DFSInputStream {
     return curStripeBuf;
   }
 
-  protected String getSrc() {
-    return src;
-  }
-
-  protected LocatedBlocks getLocatedBlocks() {
-    return locatedBlocks;
-  }
-
   protected ByteBufferPool getBufferPool() {
     return BUFFER_POOL;
   }
@@ -167,6 +157,8 @@ public class DFSStripedInputStream extends DFSInputStream {
     if (target >= getFileLength()) {
       throw new IOException("Attempted to read past end of file");
     }
+
+    maybeRegisterBlockRefresh();
 
     // Will be getting a new BlockReader.
     closeCurrentBlockReaders();
@@ -465,10 +457,8 @@ public class DFSStripedInputStream extends DFSInputStream {
         break;
       }
     }
-    if (DFSClient.LOG.isDebugEnabled()) {
-      DFSClient.LOG.debug("refreshLocatedBlock for striped blocks, offset="
-          + block.getStartOffset() + ". Obtained block " + lb + ", idx=" + idx);
-    }
+    DFSClient.LOG.debug("refreshLocatedBlock for striped blocks, offset={}." +
+        " Obtained block {}, idx={}", block.getStartOffset(), lb, idx);
     return StripedBlockUtil.constructInternalBlock(
         lsb, i, cellSize, dataBlkNum, idx);
   }
@@ -526,7 +516,7 @@ public class DFSStripedInputStream extends DFSInputStream {
       if (!warnedNodes.containsAll(dnUUIDs)) {
         DFSClient.LOG.warn(Arrays.toString(nodes) + " are unavailable and " +
             "all striping blocks on them are lost. " +
-            "IgnoredNodes = " + ignoredNodes);
+            "IgnoredNodes = {}", ignoredNodes);
         warnedNodes.addAll(dnUUIDs);
       }
     } else {

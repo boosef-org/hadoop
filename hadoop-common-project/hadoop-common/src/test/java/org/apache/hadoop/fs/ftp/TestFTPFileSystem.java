@@ -22,8 +22,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Comparator;
+import java.util.concurrent.TimeUnit;
 
-import com.google.common.base.Preconditions;
+import org.apache.hadoop.util.Preconditions;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
@@ -55,13 +56,16 @@ import static org.junit.Assert.assertEquals;
 public class TestFTPFileSystem {
 
   private FtpTestServer server;
-
+  private java.nio.file.Path testDir;
   @Rule
-  public Timeout testTimeout = new Timeout(180000);
+  public Timeout testTimeout = new Timeout(180000, TimeUnit.MILLISECONDS);
 
   @Before
   public void setUp() throws Exception {
-    server = new FtpTestServer(GenericTestUtils.getTestDir().toPath()).start();
+    testDir = Files.createTempDirectory(
+        GenericTestUtils.getTestDir().toPath(), getClass().getName()
+    );
+    server = new FtpTestServer(testDir).start();
   }
 
   @After
@@ -69,7 +73,7 @@ public class TestFTPFileSystem {
   public void tearDown() throws Exception {
     if (server != null) {
       server.stop();
-      Files.walk(server.getFtpRoot())
+      Files.walk(testDir)
           .sorted(Comparator.reverseOrder())
           .map(java.nio.file.Path::toFile)
           .forEach(File::delete);
