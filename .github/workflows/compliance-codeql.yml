@@ -39,7 +39,7 @@ jobs:
 
     steps:
     - name: Advance Security Compliance Action
-      uses: GeekMasher/advanced-security-compliance
+      uses: GeekMasher/advanced-security-compliance@v1.6
       with:
         policy: boosef-org/security-queries
         policy-path: policies/time-to-remediate.yml
