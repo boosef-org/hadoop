@@ -7,4 +7,4 @@ and our wiki, at:
    https://cwiki.apache.org/confluence/display/HADOOP/
 
 
-#1: This is a random test commit.
+#1: This is a test commit.
